@@ -5,11 +5,15 @@ import com.cloudbees.jenkins.GitHubRepositoryName;
 import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
 import com.cloudbees.jenkins.GitHubTrigger;
 import com.cloudbees.jenkins.GitHubWebHook;
+import com.coravy.hudson.plugins.github.GithubProjectProperty;
+
 import hudson.Extension;
+import hudson.model.JobProperty;
 import hudson.model.Job;
 import hudson.security.ACL;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+
 import org.jenkinsci.plugins.github.extension.GHEventsSubscriber;
 import org.kohsuke.github.GHEvent;
 import org.slf4j.Logger;
@@ -77,13 +81,44 @@ public class DefaultPushGHEventSubscriber extends GHEventsSubscriber {
                 public void run() {
                     for (Job<?, ?> job : Jenkins.getInstance().getAllItems(Job.class)) {
                         GitHubTrigger trigger = triggerFrom(job, GitHubPushTrigger.class);
+                        LOGGER.info("trigger? {}", job.getFullDisplayName());
                         if (trigger != null) {
-                            LOGGER.debug("Considering to poke {}", job.getFullDisplayName());
+                            LOGGER.info("Considering to poke {}", job.getFullDisplayName());
+                            
+                            LOGGER.info("changedRepository {},{},{}"
+                            		, changedRepository.host
+                            		, changedRepository.userName
+                            		, changedRepository.repositoryName);
+                            
+                            LOGGER.info("prpcount {}", job.getAllProperties().size());
+                            int count = 0;
+                            for (JobProperty<?> p : job.getAllProperties()) {
+                            	
+                            	//Class c =GithubProjectProperty.class;
+                            	if (count==0){
+						        LOGGER.info("prp: {}, {}, {}, {}"
+						        		, p.getDescriptor().getDisplayName()
+						        		, p.getDescriptor().getDescriptorUrl()
+						        		, ((GithubProjectProperty)p).getDisplayName()
+						        		, ((GithubProjectProperty)p).getProjectUrlStr()
+						        		
+						        		);
+						        }
+                            	else{LOGGER.info("prp: {}, {}"
+ 						        		, p.getDescriptor().getDisplayName()
+ 						        		, p.getDescriptor().getDescriptorUrl()
+ 						        		
+ 						        		);
+ 						        }
+						        //break;
+						        count++;
+                            }
+                            
                             if (GitHubRepositoryNameContributor.parseAssociatedNames(job).contains(changedRepository)) {
                                 LOGGER.info("Poked {}", job.getFullDisplayName());
                                 trigger.onPost(pusherName);
                             } else {
-                                LOGGER.debug("Skipped {} because it doesn't have a matching repository.",
+                                LOGGER.info("Skipped {} because it doesn't have a matching repository.",
                                         job.getFullDisplayName());
                             }
                         }

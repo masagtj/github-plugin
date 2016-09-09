@@ -72,13 +72,13 @@ public class GitHubRepositoryName {
      */
     @CheckForNull
     public static GitHubRepositoryName create(String url) {
-        LOGGER.debug("Constructing from URL {}", url);
+        LOGGER.info("Constructing from URL {}", url);
         for (Pattern p : URL_PATTERNS) {
             Matcher m = p.matcher(trimToEmpty(url));
             if (m.matches()) {
-                LOGGER.debug("URL matches {}", m);
+                LOGGER.info("URL matches {}", m);
                 GitHubRepositoryName ret = new GitHubRepositoryName(m.group(1), m.group(2), m.group(3));
-                LOGGER.debug("Object is {}", ret);
+                LOGGER.info("Object is {}", ret);
                 return ret;
             }
         }

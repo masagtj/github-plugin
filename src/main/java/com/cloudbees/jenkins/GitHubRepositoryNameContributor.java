@@ -38,19 +38,25 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
      *
      * @deprecated Use {@link #parseAssociatedNames(Job, Collection)}
      */
-    @Deprecated
-    public void parseAssociatedNames(AbstractProject<?, ?> job, Collection<GitHubRepositoryName> result) {
-        parseAssociatedNames((Job) job, result);
-    }
+//    @Deprecated
+//    public void parseAssociatedNames(AbstractProject<?, ?> job, Collection<GitHubRepositoryName> result) {
+//        parseAssociatedNames((Job) job, result);
+//        
+//        LOGGER.info("test-parseAssociatedNames AbstractProject {}",result.size());
+//    }
 
     /**
      * Looks at the definition of {@link Job} and list up the related github repositories,
      * then puts them into the collection.
      */
     public /*abstract*/ void parseAssociatedNames(Job<?, ?> job, Collection<GitHubRepositoryName> result) {
+    	
         if (overriddenMethodHasDeprecatedSignature(job)) {
             parseAssociatedNames((AbstractProject) job, result);
+            
+            LOGGER.info("test-parseAssociatedNames Job {}",result.size());
         } else {
+        	 LOGGER.info("you must override the new overload of parseAssociatedNames");
             throw new AbstractMethodError("you must override the new overload of parseAssociatedNames");
         }
     }
@@ -64,6 +70,9 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
      * @return true if overridden deprecated method
      */
     private boolean overriddenMethodHasDeprecatedSignature(Job<?, ?> job) {
+    	
+    	LOGGER.info("?overriddenMethodHasDeprecatedSignature?");
+    	
         return Util.isOverridden(
                 GitHubRepositoryNameContributor.class,
                 getClass(),
@@ -77,19 +86,31 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
         return Jenkins.getInstance().getExtensionList(GitHubRepositoryNameContributor.class);
     }
 
-    /**
-     * @deprecated Use {@link #parseAssociatedNames(Job)}
-     */
-    @Deprecated
-    public static Collection<GitHubRepositoryName> parseAssociatedNames(AbstractProject<?, ?> job) {
-        return parseAssociatedNames((Job) job);
-    }
+//    /**
+//     * @deprecated Use {@link #parseAssociatedNames(Job)}
+//     */
+//    @Deprecated
+//    public static Collection<GitHubRepositoryName> parseAssociatedNames(AbstractProject<?, ?> job) {
+//    	 LOGGER.info("parseAssociatedNames {}");
+//        return parseAssociatedNames((Job) job);
+//    }
 
     public static Collection<GitHubRepositoryName> parseAssociatedNames(Job<?, ?> job) {
+    	
+    	LOGGER.info("parseAssociatedNames");
+    	
         Set<GitHubRepositoryName> names = new HashSet<GitHubRepositoryName>();
         for (GitHubRepositoryNameContributor c : all()) {
             c.parseAssociatedNames(job, names);
+            LOGGER.info("GitHubRepositoryNameContributor {}",c.toString());
         }
+//        for (GitHubRepositoryName n : names) {
+//        LOGGER.info("name  {},{},{}"
+//        		, n.host
+//        		, n.userName
+//        		, n.repositoryName);
+//        }
+        
         return names;
     }
 
@@ -115,7 +136,7 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
                 try {
                     contributor.buildEnvironmentFor(job, env, TaskListener.NULL);
                 } catch (Exception e) {
-                    LOGGER.debug("{} failed to build env ({}), skipping", contributor.getClass(), e.getMessage(), e);
+                    LOGGER.info("{} failed to build env ({}), skipping", contributor.getClass(), e.getMessage(), e);
                 }
             }
             return env;
