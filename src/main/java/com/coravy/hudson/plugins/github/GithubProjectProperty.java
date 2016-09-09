@@ -43,7 +43,7 @@ public final class GithubProjectProperty extends JobProperty<Job<?, ?>> {
 
     @DataBoundConstructor
     public GithubProjectProperty(String projectUrlStr) {
-        this.projectUrl = new GithubUrl(projectUrlStr).baseUrl();
+        this.projectUrl = new GithubUrl(projectUrlStr).baseUrl().replaceAll("/$", "");
     }
 
     /**

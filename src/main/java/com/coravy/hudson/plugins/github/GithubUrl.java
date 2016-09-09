@@ -23,7 +23,7 @@ public final class GithubUrl {
             url = url.replaceFirst("/tree/.*$", "");
         }
         if (!url.endsWith("/")) {
-            url += '/';
+            //url += '/';
         }
         return url;
     }
