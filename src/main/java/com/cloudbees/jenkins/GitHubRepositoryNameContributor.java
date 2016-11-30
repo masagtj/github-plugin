@@ -5,23 +5,28 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.Util;
+import hudson.model.JobProperty;
+import hudson.model.TaskListener;
 import hudson.model.AbstractProject;
 import hudson.model.EnvironmentContributor;
 import hudson.model.Job;
-import hudson.model.TaskListener;
 import hudson.plugins.git.GitSCM;
 import hudson.scm.SCM;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import jenkins.model.Jenkins;
 import jenkins.triggers.SCMTriggerItem;
 import jenkins.triggers.SCMTriggerItem.SCMTriggerItems;
+
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import com.coravy.hudson.plugins.github.GithubProjectProperty;
 
 /**
  * Extension point that associates {@link GitHubRepositoryName}s to a project.
@@ -41,8 +46,6 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
 //    @Deprecated
 //    public void parseAssociatedNames(AbstractProject<?, ?> job, Collection<GitHubRepositoryName> result) {
 //        parseAssociatedNames((Job) job, result);
-//        
-//        LOGGER.info("test-parseAssociatedNames AbstractProject {}",result.size());
 //    }
 
     /**
@@ -53,10 +56,7 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
     	
         if (overriddenMethodHasDeprecatedSignature(job)) {
             parseAssociatedNames((AbstractProject) job, result);
-            
-            LOGGER.info("test-parseAssociatedNames Job {}",result.size());
         } else {
-        	 LOGGER.info("you must override the new overload of parseAssociatedNames");
             throw new AbstractMethodError("you must override the new overload of parseAssociatedNames");
         }
     }
@@ -97,19 +97,27 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
 
     public static Collection<GitHubRepositoryName> parseAssociatedNames(Job<?, ?> job) {
     	
-    	LOGGER.info("parseAssociatedNames");
-    	
         Set<GitHubRepositoryName> names = new HashSet<GitHubRepositoryName>();
-        for (GitHubRepositoryNameContributor c : all()) {
-            c.parseAssociatedNames(job, names);
-            LOGGER.info("GitHubRepositoryNameContributor {}",c.toString());
-        }
-//        for (GitHubRepositoryName n : names) {
-//        LOGGER.info("name  {},{},{}"
-//        		, n.host
-//        		, n.userName
-//        		, n.repositoryName);
+//        for (GitHubRepositoryNameContributor c : all()) {
+//            c.parseAssociatedNames(job, names);
+//            LOGGER.info("GitHubRepositoryNameContributor {}",c.getClass().getName());
 //        }
+        
+        // TODO:Pipelineで実行できることだけ考えてる
+        for (JobProperty<?> p : job.getAllProperties()) {
+            
+            String pname = p.getDescriptor().getDisplayName();
+            switch(pname){
+            case "GitHub project page":
+                names.add( GitHubRepositoryName.create(((GithubProjectProperty)p).getProjectUrlStr()) );
+                break;
+            case "Build triggers":
+                //PipelineTriggersJobProperty 
+                //LOGGER.info("Build triggers {}",p.getClass().getName());
+                break;
+            }
+        }
+
         
         return names;
     }
@@ -121,9 +129,15 @@ public abstract class GitHubRepositoryNameContributor implements ExtensionPoint 
     public static class FromSCM extends GitHubRepositoryNameContributor {
         @Override
         public void parseAssociatedNames(Job<?, ?> job, Collection<GitHubRepositoryName> result) {
+            
+            LOGGER.info("SCMTriggerItems {}", job.getClass().getName());
+           
+            //org.jenkinsci.plugins.workflow.job.WorkflowJob とれない？
+            
             SCMTriggerItem item = SCMTriggerItems.asSCMTriggerItem(job);
             EnvVars envVars = buildEnv(job);
             if (item != null) {
+                LOGGER.info("item not null {}");
                 for (SCM scm : item.getSCMs()) {
                     addRepositories(scm, envVars, result);
                 }

@@ -81,38 +81,9 @@ public class DefaultPushGHEventSubscriber extends GHEventsSubscriber {
                 public void run() {
                     for (Job<?, ?> job : Jenkins.getInstance().getAllItems(Job.class)) {
                         GitHubTrigger trigger = triggerFrom(job, GitHubPushTrigger.class);
-                        LOGGER.info("trigger? {}", job.getFullDisplayName());
+
                         if (trigger != null) {
                             LOGGER.info("Considering to poke {}", job.getFullDisplayName());
-                            
-                            LOGGER.info("changedRepository {},{},{}"
-                            		, changedRepository.host
-                            		, changedRepository.userName
-                            		, changedRepository.repositoryName);
-                            
-                            LOGGER.info("prpcount {}", job.getAllProperties().size());
-                            int count = 0;
-                            for (JobProperty<?> p : job.getAllProperties()) {
-                            	
-                            	//Class c =GithubProjectProperty.class;
-                            	if (count==0){
-						        LOGGER.info("prp: {}, {}, {}, {}"
-						        		, p.getDescriptor().getDisplayName()
-						        		, p.getDescriptor().getDescriptorUrl()
-						        		, ((GithubProjectProperty)p).getDisplayName()
-						        		, ((GithubProjectProperty)p).getProjectUrlStr()
-						        		
-						        		);
-						        }
-                            	else{LOGGER.info("prp: {}, {}"
- 						        		, p.getDescriptor().getDisplayName()
- 						        		, p.getDescriptor().getDescriptorUrl()
- 						        		
- 						        		);
- 						        }
-						        //break;
-						        count++;
-                            }
                             
                             if (GitHubRepositoryNameContributor.parseAssociatedNames(job).contains(changedRepository)) {
                                 LOGGER.info("Poked {}", job.getFullDisplayName());

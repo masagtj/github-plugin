@@ -46,8 +46,8 @@
     </issueManagement>
 
     <properties>
-        <jenkins.version>1.580</jenkins.version>
-        <jenkins-test-harness.version>1.580</jenkins-test-harness.version>
+        <jenkins.version>2.7.3</jenkins.version>
+        <jenkins-test-harness.version>2.14</jenkins-test-harness.version>
         <release.skipTests>false</release.skipTests>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
@@ -242,13 +242,13 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.16</version>
                 <executions>
-                    <execution>
+<!--                     <execution>
                         <id>checkstyle</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
-                    </execution>
+                    </execution> -->
                 </executions>
                 <configuration>
                     <encoding>UTF-8</encoding>

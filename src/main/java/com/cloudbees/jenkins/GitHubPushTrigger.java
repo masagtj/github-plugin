@@ -110,8 +110,9 @@ public class GitHubPushTrigger extends Trigger<Job<?, ?>> implements GitHubTrigg
                 return false;
             }
 
+            // webhookをキャッチするので必ずtrue
             public void run() {
-                if (runPolling()) {
+                if ( true/*runPolling()*/) {
                     GitHubPushCause cause;
                     try {
                         cause = new GitHubPushCause(getLogFile(), pushBy);

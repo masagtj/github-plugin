@@ -1,19 +1,5 @@
 package org.jenkinsci.plugins.github.test;
 
-import com.cloudbees.jenkins.GitHubRepositoryName;
-import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import hudson.model.Job;
-import org.jenkinsci.plugins.github.config.GitHubServerConfig;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import static com.cloudbees.jenkins.GitHubWebHookFullTest.classpath;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -21,6 +7,20 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static java.lang.String.format;
 import static wiremock.org.mortbay.jetty.HttpStatus.ORDINAL_201_Created;
+import hudson.model.Job;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.jenkinsci.plugins.github.config.GitHubServerConfig;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+
+import com.cloudbees.jenkins.GitHubRepositoryName;
+import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
  * Mocks GitHub on localhost with some predefined methods
@@ -96,7 +96,7 @@ public class GHMockRule implements TestRule {
                         .willReturn(aResponse()
                                 .withStatus(200)
                                 .withHeader("Content-Type", "application/json; charset=utf-8")
-                                .withBody(classpath(GHMockRule.class, "user.json"))));
+                                /*.withBody(classpath(GHMockRule.class, "user.json"))*/));
             }
         });
     }
@@ -116,7 +116,7 @@ public class GHMockRule implements TestRule {
                                 .willReturn(aResponse()
                                         .withStatus(200)
                                         .withHeader("Content-Type", "application/json; charset=utf-8")
-                                        .withBody(classpath(GHMockRule.class, "repos-repo.json"))));
+                                        /*.withBody(classpath(GHMockRule.class, "repos-repo.json"))*/));
             }
         });
     }

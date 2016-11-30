@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.github.admin;
 
 import com.cloudbees.jenkins.GitHubRepositoryName;
+
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.interceptor.Interceptor;
@@ -9,6 +10,8 @@ import org.kohsuke.stapler.interceptor.InterceptorAnnotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
+
+import javax.servlet.ServletException;
 
 import static com.google.common.base.Predicates.instanceOf;
 import static com.google.common.collect.Lists.newArrayList;
@@ -34,7 +37,7 @@ public @interface ValidateRepoName {
 
         @Override
         public Object invoke(StaplerRequest request, StaplerResponse response, Object instance, Object[] arguments)
-                throws IllegalAccessException, InvocationTargetException {
+                throws IllegalAccessException, InvocationTargetException, ServletException {
 
             if (!from(newArrayList(arguments)).firstMatch(instanceOf(GitHubRepositoryName.class)).isPresent()) {
                 throw new InvocationTargetException(
